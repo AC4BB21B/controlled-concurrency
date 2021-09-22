@@ -23,7 +23,7 @@ async function returnsAfter100Ms(): Promise<void> {
 }
 
 async function crashes(msg: string): Promise<void> {
-  await Helpers.wait(0.1);
+  await Helpers.wait(0.05);
   throw Error(msg);
 }
 
@@ -45,7 +45,7 @@ describe('Parallelize unit tests', function(): void {
     }
     await parallel.finish();
     const endTime = timestampNow();
-    expect(endTime - startTime).is.greaterThanOrEqual(0.3);
+    expect(endTime - startTime).is.greaterThanOrEqual(0.298);
     expect(endTime - startTime).is.lessThan(0.4);
   });
 
@@ -62,12 +62,12 @@ describe('Parallelize unit tests', function(): void {
     }
     await parallel.finish();
     const endTime = timestampNow();
-    expect(endTime - startTime).is.greaterThanOrEqual(0.2);
+    expect(endTime - startTime).is.greaterThanOrEqual(0.198);
     expect(endTime - startTime).is.lessThan(0.3);
   });
 
   it('parallelism = 5 and > tasks', async function(): Promise<void> {
-    this.slow(150);
+    this.slow(120);
     const startTime = timestampNow();
     const parallel = new Parallelize({
       maxRunning: 5,
@@ -79,7 +79,7 @@ describe('Parallelize unit tests', function(): void {
     }
     await parallel.finish();
     const endTime = timestampNow();
-    expect(endTime - startTime).is.greaterThanOrEqual(0.1);
+    expect(endTime - startTime).is.greaterThanOrEqual(0.098);
     expect(endTime - startTime).is.lessThan(0.2);
   });
 
@@ -101,6 +101,7 @@ describe('Parallelize unit tests', function(): void {
   });
 
   it('throw and throw when maxRunning = 1', async function(): Promise<void> {
+    this.slow(120);
     const parallel = new Parallelize({
       maxRunning: 1,
       throwOnError: true

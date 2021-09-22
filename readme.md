@@ -1,5 +1,10 @@
 # controlled-concurrency
 
+[![Build status](https://travis-ci.com/AC4BB21B/controlled-concurrency.svg?&branch=master)](https://app.travis-ci.com/github/AC4BB21B/controlled-concurrency)
+[![npm version](https://badge.fury.io/js/controlled-concurrency.svg)](https://www.npmjs.com/package/controlled-concurrency)
+[![License](https://img.shields.io/npm/l/controlled-concurrency)](license.md)
+![](https://badgen.net/badge/icon/TypeScript?icon=typescript&label)
+
 controlled-concurrency is an experimental library, implemented in TypeSript, to execute promises in parallel with a limited concurrency.
 
 It does not require pre-building a list of all promises but instead will accept promises on-the-fly. Promises are processed as soon as they are added until the `maxRunning` threshold is reached. When the threshold is reached, the main thread execution will wait until a slot gets freed to process the new promise.

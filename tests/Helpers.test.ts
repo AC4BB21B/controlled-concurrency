@@ -24,7 +24,7 @@ describe('Helpers unit tests', function(): void {
     const startTime = timestampNow();
     await Helpers.wait(0.2);
     const endTime = timestampNow();
-    expect(endTime - startTime).is.greaterThanOrEqual(0.2);
+    expect(endTime - startTime).is.greaterThanOrEqual(0.198);
     expect(endTime - startTime).is.lessThan(0.25);
   });
 
@@ -33,7 +33,7 @@ describe('Helpers unit tests', function(): void {
     const startTime = timestampNow();
     await Helpers.wait(0.4);
     const endTime = timestampNow();
-    expect(endTime - startTime).is.greaterThanOrEqual(0.4);
+    expect(endTime - startTime).is.greaterThanOrEqual(0.398);
     expect(endTime - startTime).is.lessThan(0.45);
   });
 });
