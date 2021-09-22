@@ -1,0 +1,33 @@
+{
+  "name": "controlled-concurrency",
+  "version": "0.1.20210920",
+  "description": "Library for controlled parallel execution of async functions, with no external dependencies",
+  "main": "./dist/index.js",
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "build": "tsc",
+    "coverage": "nyc npm test",
+    "lint": "eslint \"**\\*.ts\"",
+    "test": "ts-mocha --parallel tests/**/*.test.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AC4BB21B/controlled-concurrency.git"
+  },
+  "author": "David Dernoncourt",
+  "license": "LGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/AC4BB21B/controlled-concurrency/issues"
+  },
+  "homepage": "https://github.com/AC4BB21B/controlled-concurrency",
+  "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^14.17.18"
+  }
+}
