@@ -1,6 +1,6 @@
 {
   "name": "controlled-concurrency",
-  "version": "0.1.20210920",
+  "version": "0.1.20210922",
   "description": "Library for controlled parallel execution of async functions, with no external dependencies",
   "main": "./dist/index.js",
   "engines": {
