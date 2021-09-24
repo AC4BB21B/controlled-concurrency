@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/npm/l/controlled-concurrency)](license.md)
 ![](https://badgen.net/badge/icon/TypeScript?icon=typescript&label)
 
-controlled-concurrency is an experimental library, implemented in TypeSript, to execute promises in parallel with a limited concurrency.
+controlled-concurrency is an experimental library, implemented in TypeScript, to execute promises in parallel with a limited concurrency.
 
 It does not require pre-building a list of all promises but instead will accept promises on-the-fly. Promises are processed as soon as they are added until the `maxRunning` threshold is reached. When the threshold is reached, the main thread execution will wait until a slot gets freed to process the new promise.
 
@@ -25,19 +25,24 @@ import parallelize from 'controlled-concurrency';
 function wait(seconds: number): Promise<void> {
   return new Promise((resolve, reject) => {
     if (seconds <= 0) resolve();
-    else setTimeout(resolve, seconds * 1000);
+    else setTimeout(() => {console.log('tick'); resolve()}, seconds * 1000);
   });
 }
 
-const parallel = new parallelize.Parallelize({
-  maxRunning: 2,
-  throwOnError: false,
-  granularity: 0.001
-});
-for (let i = 0; i < 3; i++) {
-  await parallel.run(wait(1));
+async function main() {
+  const parallel = new parallelize.Parallelize({
+    maxRunning: 3,
+    throwOnError: false,
+    granularity: 0.001
+  });
+  for (let i = 0; i < 5; i++) {
+    await parallel.run(wait(1));
+  }
+  await parallel.finish();
 }
-await parallel.finish();
+
+main()
+.then(() => console.log('ok'));
 ```
 
 ### Options

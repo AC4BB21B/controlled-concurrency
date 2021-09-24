@@ -7,17 +7,6 @@ import {expect, should} from 'chai';
 import Helpers from '../src/Helpers';
 import Parallelize from '../src/Parallelize';
 
-// process
-//   .on('unhandledRejection', (reason, p) => {
-//     console.error('===============Unhandled Rejection=================');
-//     // console.error(reason, 'Unhandled Rejection at Promise', p);
-//   })
-//   .on('uncaughtException', err => {
-//     console.error('===============Uncaught Exception=================');
-//     // console.error(err, 'Uncaught Exception thrown');
-//     process.exit(1);
-//   });
-
 async function returnsAfter100Ms(): Promise<void> {
   await Helpers.wait(0.1);
 }
