@@ -19,24 +19,15 @@ export default class Parallelize {
   }
 
   public async run(promise: Promise<any>): Promise<void> {
-    if (this.exceptions.length > 0) {
-      const copy = JSON.parse(JSON.stringify(this.exceptions));
-      this.exceptions = [];
-      throw copy;
-    }
+    this.throwIfWeMust();
 
     ++this.currentlyRunning;
     promise
-    .then(() => {
-      --this.currentlyRunning;
-    })
     .catch(e => {
-      if (this.throwOnError) {
-        this.exceptions.push(e);
-        --this.currentlyRunning;
-      } else {
-        --this.currentlyRunning;
-      }
+      if (this.throwOnError) this.exceptions.push(e);
+    })
+    .finally(() => {
+      --this.currentlyRunning;
     });
 
     while (this.currentlyRunning >= this.maxRunning) {
@@ -48,6 +39,10 @@ export default class Parallelize {
     while (this.currentlyRunning > 0) {
       await Helpers.wait(this.granularity);
     }
+    this.throwIfWeMust();
+  }
+
+  private throwIfWeMust(): void {
     if (this.exceptions.length > 0) {
       const copy = JSON.parse(JSON.stringify(this.exceptions));
       this.exceptions = [];

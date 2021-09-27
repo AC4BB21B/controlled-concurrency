@@ -3,7 +3,8 @@
 [![Build status](https://travis-ci.com/AC4BB21B/controlled-concurrency.svg?&branch=master)](https://app.travis-ci.com/github/AC4BB21B/controlled-concurrency)
 [![npm version](https://badge.fury.io/js/controlled-concurrency.svg)](https://www.npmjs.com/package/controlled-concurrency)
 [![License](https://img.shields.io/npm/l/controlled-concurrency)](license.md)
-![](https://badgen.net/badge/icon/TypeScript?icon=typescript&label)
+[![Bettercodehub rating](https://bettercodehub.com/edge/badge/AC4BB21B/controlled-concurrency?branch=master)](https://bettercodehub.com/)
+[![](https://badgen.net/badge/icon/TypeScript?icon=typescript&label)]()
 
 controlled-concurrency is an experimental library, implemented in TypeScript, to execute promises in parallel with a limited concurrency.
 
