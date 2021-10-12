@@ -52,22 +52,26 @@ export default class Parallelize {
     }
     this.throwIfWeMust();
     if (this.storeResults) {
-      let sortedResults: PromiseAllSettledList = new Array(this.rawResults.length);
-      for (const r of this.rawResults) {
-        if (r.status === 'fulfilled') {
-          sortedResults[r.index] = {
-            status: r.status,
-            value: r.value
-          };
-        } else {
-          sortedResults[r.index] = {
-            status: r.status,
-            reason: r.reason
-          };
-        }
-      }
-      return sortedResults;
+      return this.getSortedResults();
     }
+  }
+
+  private getSortedResults(): PromiseAllSettledList {
+    let sortedResults: PromiseAllSettledList = new Array(this.rawResults.length);
+    for (const r of this.rawResults) {
+      if (r.status === 'fulfilled') {
+        sortedResults[r.index] = {
+          status: r.status,
+          value: r.value
+        };
+      } else {
+        sortedResults[r.index] = {
+          status: r.status,
+          reason: r.reason
+        };
+      }
+    }
+    return sortedResults;
   }
 
   private throwIfWeMust(): void {
