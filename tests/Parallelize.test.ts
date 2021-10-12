@@ -11,9 +11,14 @@ async function returnsAfter100Ms(): Promise<void> {
   await Helpers.wait(0.1);
 }
 
-async function crashes(msg: string): Promise<void> {
+async function returnsMsgAfter100Ms(msg: string): Promise<string> {
+  await Helpers.wait(0.1);
+  return msg;
+}
+
+async function crashesAfter50Ms(msg: string): Promise<void> {
   await Helpers.wait(0.05);
-  throw Error(msg);
+  throw msg;
 }
 
 function timestampNow(): number {
@@ -61,6 +66,7 @@ describe('Parallelize unit tests', function(): void {
     const parallel = new Parallelize({
       maxRunning: 5,
       throwOnError: false,
+      storeResults: true,
       granularity: 0.001
     });
     for (let i = 0; i < 2; i++) {
@@ -80,8 +86,8 @@ describe('Parallelize unit tests', function(): void {
     });
     let functionThrew = false;
     try {
-      await parallel.run(crashes('E1'));
-      await parallel.run(crashes('E2'));
+      await parallel.run(crashesAfter50Ms('E1'));
+      await parallel.run(crashesAfter50Ms('E2'));
       await parallel.finish();
     } catch (e) {
       functionThrew = true;
@@ -89,16 +95,52 @@ describe('Parallelize unit tests', function(): void {
     expect(functionThrew).is.equal(false);
   });
 
+  it('throw and ignore and store', async function(): Promise<void> {
+    this.slow(110);
+    const parallel = new Parallelize({
+      maxRunning: 3,
+      throwOnError: false,
+      storeResults: true,
+      granularity: 0.01
+    });
+    let functionThrew = false;
+    try {
+      await parallel.run(returnsAfter100Ms());
+      await parallel.run(returnsMsgAfter100Ms('ok'));
+      await parallel.run(crashesAfter50Ms('E2'));
+      const result = await parallel.finish();
+      expect(result).to.be.an('array');
+      expect(result).to.deep.equal([
+        {
+          status: 'fulfilled',
+          value: undefined
+        },
+        {
+          status: 'fulfilled',
+          value: 'ok'
+        },
+        {
+          status: 'rejected',
+          reason: 'E2'
+        }
+      ]);
+    } catch (e) {
+      console.error(e);
+      functionThrew = true;
+    }
+    expect(functionThrew).is.equal(false);
+  });
+
   it('throw and throw when maxRunning = 1', async function(): Promise<void> {
-    this.slow(120);
+    this.slow(60);
     const parallel = new Parallelize({
       maxRunning: 1,
       throwOnError: true
     });
     let functionThrew = false;
     try {
-      await parallel.run(crashes('E1'));
-      await parallel.run(crashes('E2'));
+      await parallel.run(crashesAfter50Ms('E1'));
+      await parallel.run(crashesAfter50Ms('E2'));
       await parallel.finish();
     } catch (e) {
       functionThrew = true;
@@ -114,8 +156,8 @@ describe('Parallelize unit tests', function(): void {
     });
     let functionThrew = false;
     try {
-      await parallel.run(crashes('E1'));
-      await parallel.run(crashes('E2'));
+      await parallel.run(crashesAfter50Ms('E1'));
+      await parallel.run(crashesAfter50Ms('E2'));
       await parallel.finish();
     } catch (e) {
       functionThrew = true;

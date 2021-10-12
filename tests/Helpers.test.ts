@@ -11,9 +11,10 @@ function timestampNow(): number {
 }
 
 describe('Helpers unit tests', function(): void {
-  it('waits negative time', async function(): Promise<void> {
+  it('negative or 0 time does not wait', async function(): Promise<void> {
     const startTime = timestampNow();
     await Helpers.wait(-1);
+    await Helpers.wait(0);
     const endTime = timestampNow();
     expect(endTime - startTime).is.greaterThanOrEqual(0);
     expect(endTime - startTime).is.lessThan(0.05);

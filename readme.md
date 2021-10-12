@@ -6,11 +6,18 @@
 [![Bettercodehub rating](https://bettercodehub.com/edge/badge/AC4BB21B/controlled-concurrency?branch=master)](https://bettercodehub.com/)
 [![](https://badgen.net/badge/icon/TypeScript?icon=typescript&label)]()
 
-controlled-concurrency is an experimental library, implemented in TypeScript, to execute promises in parallel with a limited concurrency.
+`controlled-concurrency` is a library, implemented in TypeScript, to execute promises in parallel with a limited concurrency.
 
-It does not require pre-building a list of all promises but instead will accept promises on-the-fly. Promises are processed as soon as they are added until the `maxRunning` threshold is reached. When the threshold is reached, the main thread execution will wait until a slot gets freed to process the new promise.
+It does not require pre-building a list of all promises but instead will accept promises on-the-fly.
+Promises are processed as soon as they are added until the `maxRunning` threshold is reached.
+When the threshold is reached, the main thread execution will wait until a slot gets freed to process the new promise.
 
-The typical use case is when you want to spawn a controlled amount of processes, each running a somewhat long task (due to the way the queue is handled, there is significant overhead when tasks are shorter than ~100ms), without caring about their output in the main process. You can choose to swallow or forward thrown exceptions, but the latter is currently not very well supported.
+The typical use case for `ParallelizeBasic` is when you want to spawn a controlled amount of processes,
+each running a somewhat long task (due to the way the queue is handled, there is
+significant overhead when tasks are shorter than ~10ms), without caring about
+their output in the main process.
+
+The `Parallelize` class offers more options. In particular, you can choose to swallow or forward thrown exceptions, by setting `throwOnError` to `false` or `true`, but the latter is currently not very well supported. You can also chose to collect results, by setting `storeResults` to `true`.
 
 ## Installation
 
@@ -30,16 +37,30 @@ function wait(seconds: number): Promise<void> {
   });
 }
 
-async function main() {
+async function main(): Promise<void> {
+  console.log('Running full Parallelize');
   const parallel = new parallelize.Parallelize({
     maxRunning: 3,
     throwOnError: false,
+    storeResults: true,
     granularity: 0.001
   });
   for (let i = 0; i < 5; i++) {
     await parallel.run(wait(1));
   }
-  await parallel.finish();
+  const result = await parallel.finish();
+  console.log(result);
+
+  await main2();
+}
+
+async function main2(): Promise<void> {
+  console.log('Running ParallelizeBasic');
+  const parallelBasic = new parallelize.ParallelizeBasic(3);
+  for (let i = 0; i < 5; i++) {
+    await parallelBasic.run(wait(1));
+  }
+  await parallelBasic.finish();
 }
 
 main()
@@ -48,9 +69,23 @@ main()
 
 ### Options
 
-- `maxRunning`: number, mandatory, max number of threads
-- `throwOnError`: boolean, mandatory, whether or not exceptions thrown by running processes should be forwarded. Support for `true` is still a bit messy at the moment so you may want to set it to `false` and catch them yourself like `await parallel.run(wait(0.1).catch(e => {do something}));`
-- `granularity`: number, optional (default 0.1), seconds between each check for an empty spot in the execution pool, when the pool is full. This is the reason why this library is not appropriate for very very short tasks.
+`ParallelizeBasic` only take a single and mandatory option, the number of threads,
+passed as a number to the constructor: `new parallelize.ParallelizeBasic(3)`
+
+`Parallelize` takes the following options
+
+- `maxRunning`: number, mandatory, max number of threads.
+- `throwOnError`: boolean, optional (default `false`),, whether or not exceptions thrown by running processes should be forwarded.
+Support for `true` is still a bit messy at the moment so you may want to set it to `false` and catch them yourself,
+like `await parallel.run(wait(0.1).catch(e => {do something}))`, or just use `storeResults`
+- `storeResults`: boolean, optional (default `false`), whether or not to collect the results of the promises.
+If `true`, the results can be collected from `finish()`.
+They will be in a format similar to `Promise.allSettled()`, and sorted in the same order as the promises were added to the queue.
+- `granularity`: number, optional (default 0.001), seconds between each check for an empty spot in the execution pool, when the pool is full.
+This is the reason why this library is not appropriate for very very short tasks.
+
+`ParallelizeBasic` is similar to running `Parallelize` with `throwOnError = false`, `storeResults = false`, and `granularity = 0.001`
+(but uses different, more concise code).
 
 
 ## Contributing
